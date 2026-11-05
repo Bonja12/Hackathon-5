@@ -1,0 +1,4 @@
+region,model,condition,n,mean_score,share_full,share_refusal,error_rate
+US,openai/gpt-4o,CN/system,38,3.8947368421052633,0.8947368421052632,0.0,0.0
+US,openai/gpt-4o,US/system,56,3.8035714285714284,0.8571428571428571,0.017857142857142856,0.0
+US,openai/gpt-4o,baseline,56,3.75,0.8214285714285714,0.017857142857142856,0.0

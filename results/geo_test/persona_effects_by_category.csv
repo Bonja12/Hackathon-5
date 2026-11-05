@@ -1,0 +1,12 @@
+model,condition,category,n_pairs,mean_delta
+openai/gpt-4o,CN/system,china_critical,16,0.0
+openai/gpt-4o,CN/system,control,4,0.0
+openai/gpt-4o,CN/system,eu_critical,2,0.0
+openai/gpt-4o,CN/system,russia_critical,8,0.125
+openai/gpt-4o,CN/system,us_critical,8,0.0
+openai/gpt-4o,US/system,china_critical,16,0.0625
+openai/gpt-4o,US/system,control,4,0.25
+openai/gpt-4o,US/system,eu_critical,8,-0.125
+openai/gpt-4o,US/system,harmful_content,12,0.16666666666666666
+openai/gpt-4o,US/system,russia_critical,8,0.0
+openai/gpt-4o,US/system,us_critical,8,0.0

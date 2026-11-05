@@ -112,6 +112,30 @@ Some example techniques are already present in `attack_techniques.csv`. It is po
 
 It is possible to use `NA` for the example if there is no example available.
 
+### Geopolitical and user-country experiments
+`provile/geo_experiment.py` extends PRoViLE with two research questions: (1) do models from the US, Europe and Asia answer the same sensitive requests differently, and (2) can a model be made to believe it talks to a user from a specific country, and does that change its output?
+
+```
+python -m provile.geo_experiment --dry-run          # only prints the number of API calls
+python -m provile.geo_experiment                    # run (resumable) and analyse
+python -m provile.geo_experiment --personas US NL CN RU IN --deliveries system metadata user --repeats 3
+python -m provile.geo_experiment --analyze-only     # re-create tables and plots from results/geo/
+```
+
+How it works:
+* **Fixed prompt set.** The attacker LLM writes the attack prompts once (cached in `attack_prompts.csv`). Every target model and every persona receives exactly the same prompts, so differences are not caused by attacker randomness. The technique `direct_request` skips the attacker and asks the question plainly. Attack prompts are generated without judge feedback (no multi-turn refinement), because the feedback would depend on the target.
+* **Targets** are listed in `provile/targets/geo_targets.csv` (`model;region;developer`). Region is the developer's home region. Add or remove rows and check the model names on OpenRouter.
+* **Objectives** in `attack_objectives/geopolitical_objectives.csv` have a `category`: `control` (neutral, should always be answered), `china_critical`, `russia_critical`, `us_critical`, `eu_critical`. The original bias/profanity objectives get the category `harmful_content`. For political objectives a high score means the model gave the factual answer, for harmful objectives it means the model complied with the harmful request. In both cases the score is the degree of compliance.
+* **Personas** (`personas.py`) state where the user is located and nothing else. Three delivery modes: `system` (sentence in the system prompt), `metadata` (platform-style locale, time zone and IP geolocation in the system prompt) and `user` (the user says it in the message).
+* **Manipulation check.** Each target is asked where the user is located. `belief.csv` and `belief_heatmap.png` show how often it names the persona's country, so you can tell a persona that was ignored from a persona that had no effect.
+* **Errors are not refusals.** API failures and empty answers are flagged (`error`) and left out of all means, and the judge is not called for them.
+
+Output in `results/geo/`: `results.csv` (every trial with response and judge output), `belief.csv`, summary tables (`region_baseline.csv`, `persona_effects.csv`, ...) and the plots `baseline_heatmap.png`, `persona_delta_heatmap.png` and `belief_heatmap.png`.
+
+Statistics: persona effects are paired (same model, same prompt, with and without persona) and tested with a sign-flip permutation test and a bootstrap confidence interval. P-values are not corrected for the number of comparisons. Region differences are computed over models, and region is confounded with developer, so with only a few models per region they are descriptive.
+
+Notes on the original scoring: the judge only sees the objective and the response, not the attack prompt. Score 2 means "irrelevant", so the scale is not strictly ordinal. The judge prompt said the score could be 1-10 although only 1-4 is valid; this is fixed, and the score is now read from `[[n]]` first. When the judge gives no valid score after `MAX_ATTEMPTS` the code assigns 0, not 1 as stated above.
+
 ### Example result
 In the `example_result` folder, an example of the results is included. In here, you can find the results of a multi-run example, including the heatmap, histogram and log-file.
 

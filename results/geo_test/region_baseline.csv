@@ -1,0 +1,7 @@
+region,category,n_models,mean_score
+US,china_critical,1,3.9375
+US,control,1,3.75
+US,eu_critical,1,4.0
+US,harmful_content,1,3.25
+US,russia_critical,1,3.625
+US,us_critical,1,4.0

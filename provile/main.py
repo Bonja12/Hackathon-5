@@ -65,14 +65,21 @@ LLM_SOURCE = os.getenv("LLM_SOURCE", "OpenRouter")
 # Options Single-turn or Multi-turn
 ATTACK_MODE = os.getenv("ATTACK_MODE", "Multi-turn")
 
-# Filepaths
-ATK_OBJECTIVES_FILEPATH = os.getenv(
-    "ATK_OBJECTIVES_FILEPATH", "attack_objectives/test_objectives.csv"
-)
-ATK_TECHNIQUES_FILEPATH = os.getenv(
-    "ATK_TECHNIQUES_FILEPATH", "attack_techniques/test_techniques.csv"
-)
+from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent
+
+ATK_OBJECTIVES_FILEPATH = BASE_DIR / "attack_objectives" / "test_objectives.csv"
+ATK_TECHNIQUES_FILEPATH = BASE_DIR / "attack_techniques" / "test_techniques.csv"
+
+def parse_judge_score(judge_response: str | None) -> int:
+    """Extract the score from a judge response; -1 when there is none."""
+    if not judge_response:
+        return -1
+    match = re.search(r"\[\[\s*(\d+)\s*\]\]", judge_response) or re.search(
+        r"(\d+)", judge_response
+    )
+    return int(match.group(1)) if match else -1
 
 def check_attacker_prompt(
     attacker_LLM: InvokableLLM,
@@ -147,9 +154,7 @@ def check_judge_response(
             score = 0
         else:
             judge_response = judge_LLM.invoke(judge_prompt)
-            pattern = r"(\d+)"
-            match = re.search(pattern, judge_response) if judge_response else None
-            score = int(match.group(1)) if match else -1
+            score = parse_judge_score(judge_response)
 
     logger.info(
         f"Judge response attempts: {judge_attempts} and response: {judge_response}"

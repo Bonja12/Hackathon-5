@@ -1,0 +1,8 @@
+model;region;developer
+openai/gpt-4o;US;OpenAI
+anthropic/claude-sonnet-4.5;US;Anthropic
+google/gemini-2.5-flash;US;Google
+meta-llama/llama-3.3-70b-instruct;US;Meta
+mistralai/mistral-large;Europe;Mistral AI
+qwen/qwen-2.5-72b-instruct;Asia;Alibaba
+deepseek/deepseek-chat;Asia;DeepSeek
